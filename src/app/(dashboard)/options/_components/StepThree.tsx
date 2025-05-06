@@ -127,7 +127,7 @@ export default function StepThree({ currentStep }: StepThreeProps) {
                 Generating...
               </>
             ) : (
-              "Generate Transaction id's"
+              "Start scraping"
             )}
           </button>
         </div>
