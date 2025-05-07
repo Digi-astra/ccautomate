@@ -12,6 +12,13 @@ import { scrapeSheetData } from '@/_serverfeatures/scraping/transaction';
 
 const folderId = process.env.Folderid;
 
+// Add debug logging
+console.log('Folder ID:', folderId);
+
+// if (!folderId) {
+//     throw new CustomError('Folder ID is not configured. Please set the Folderid environment variable.', 500);
+// }
+
 // GET handler for read-only operations
 export async function GET(request: Request) {
     try {
@@ -49,6 +56,8 @@ export async function GET(request: Request) {
                 version: 'v3', 
                 auth: authClient
             });
+            
+            console.log('Attempting to list files from folder:', folderId);
             const files = await driveClient.files.list({
                 q: `'${folderId}' in parents`,
                 fields: 'nextPageToken, files(id, name)'
