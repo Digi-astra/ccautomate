@@ -1,7 +1,7 @@
 import useIndexDB from "@/_hooks/indexdb";
 import ReactSelectComponent from "@/components/custom/reactselect";
 import { useState, useEffect } from "react";
-import { clearProgress, scrapeSheetData } from "@/_clientfeatures/api";
+import { clearProgress, scrapeSheetData , generateContent } from "@/_clientfeatures/api";
 import { errorToast, successToast } from "@/components/custom/customtoast";
 import useLocalStorage from "@/_hooks/localstorage";
 import StatusDiv from "@/components/custom/statusdiv";
@@ -25,6 +25,7 @@ export default function StepThree({ currentStep }: StepThreeProps) {
   const [currentEnv] = useLocalStorage('currentEnv', '');
   const [token] = useLocalStorage('token', '');
   const [option] = useLocalStorage('option', '');
+  const [action] = useLocalStorage('action', '');
   const [status, setStatus] = useState<StatusData[]>([]);
   const [progressBool, setProgressBool] = useState<boolean>(false);
   // Transform the files data into the correct format for ReactSelect
@@ -110,7 +111,12 @@ export default function StepThree({ currentStep }: StepThreeProps) {
             className="bg-primary text-white px-4 py-2 rounded-md flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={async () => {
               setIsGenerating(true);
-              let result = await scrapeSheetData(selectedFile?.value || '', 'generatetransactionid', option, currentEnv, token);
+              let result;
+              if(action === "generate"){
+                result = await generateContent(selectedFile?.value || '', 'start_content_generation', option, currentEnv, token);
+              }else{
+                result = await scrapeSheetData(selectedFile?.value || '', 'generatetransactionid', option, currentEnv, token);
+              }
               setIsGenerating(false);
               if (result?.success) {
                 successToast(result?.message);
@@ -127,7 +133,7 @@ export default function StepThree({ currentStep }: StepThreeProps) {
                 Generating...
               </>
             ) : (
-              "Start scraping"
+              action === "generate" ? "Start generating content" : "Start scraping"
             )}
           </button>
         </div>

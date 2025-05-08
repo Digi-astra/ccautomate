@@ -56,6 +56,25 @@ async function scrapeSheetData(sheetId: string, action: string, contentType: str
     }
 }
 
+async function generateContent(sheetId: string, action: string, contentType: string, currentEnv: string, token: string) {
+    try {
+        console.log({sheetId, action, contentType, currentEnv, token});
+        const response = await axios.post(`/api/v2/content`,{
+            sheetId,
+            currentEnv,
+            contentType,
+            token,
+            action
+        });
+        return response.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error instanceof AxiosError ? error.response?.data?.message : 'An unknown error occurred'
+        };
+    }
+}
+
 // async function authenticateGoogle() {
 //     try {
 //         const auth = new google.auth.GoogleAuth({
@@ -85,4 +104,4 @@ async function scrapeSheetData(sheetId: string, action: string, contentType: str
 //     }
 // }
 
-export {Login , authenticateGoogle , scrapeSheetData , clearProgress}
+export {Login , authenticateGoogle , scrapeSheetData , clearProgress, generateContent}

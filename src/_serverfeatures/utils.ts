@@ -49,3 +49,7 @@ export function generateRamdomId() {
 export function sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+// export function generateRamdomId() {
+//     return Math.floor(100000 + Math.random() * 900000).toString();
+// }

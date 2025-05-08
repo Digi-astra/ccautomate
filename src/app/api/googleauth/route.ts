@@ -13,7 +13,7 @@ import { scrapeSheetData } from '@/_serverfeatures/scraping/transaction';
 const folderId = process.env.Folderid;
 
 // Add debug logging
-console.log('Folder ID:', folderId);
+// console.log('Folder ID:', folderId);
 
 // if (!folderId) {
 //     throw new CustomError('Folder ID is not configured. Please set the Folderid environment variable.', 500);
@@ -57,7 +57,7 @@ export async function GET(request: Request) {
                 auth: authClient
             });
             
-            console.log('Attempting to list files from folder:', folderId);
+            // console.log('Attempting to list files from folder:', folderId);
             const files = await driveClient.files.list({
                 q: `'${folderId}' in parents`,
                 fields: 'nextPageToken, files(id, name)'
@@ -105,9 +105,9 @@ export async function GET(request: Request) {
 // POST handler for operations that modify data
 export async function POST(request: Request) {
     try {
-        console.log("request", request)
+        // console.log("request", request)
         const body = await request.json();
-        console.log("body", body)
+        // console.log("body", body)
         const action = body.action;
         
 
@@ -119,14 +119,14 @@ export async function POST(request: Request) {
         if(action === "clearprogress"){
             const processId = body.processId;
             let  progress = getProgress();
-            console.log("before clear progress", progress)
+            // console.log("before clear progress", progress)
             if(!processId){
                 clearAllProgress();
             }else{
                 clearProgress(processId);
             }
             progress = getProgress();
-            console.log("after clear progress", progress)
+            // console.log("after clear progress", progress)
             return NextResponse.json({
                 success: true,
                 message: 'Progress cleared successfully',
@@ -167,8 +167,8 @@ export async function POST(request: Request) {
         }
 
         if(action === "generatetransactionid"){
-            console.clear();
-            console.log("Generating transaction id's");
+            // console.clear();
+            // console.log("Generating transaction id's");
             const { sheetId, contentType, currentEnv, token } = body;
 
             if (!sheetId) {
@@ -204,7 +204,7 @@ export async function POST(request: Request) {
 
         throw new CustomError('Invalid action parameter', 400);
     } catch (error) {
-       console.log("error", error);
+       // console.log("error", error);
         return NextResponse.json(
             {
                 success: false,
