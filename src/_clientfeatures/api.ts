@@ -74,34 +74,17 @@ async function generateContent(sheetId: string, action: string, contentType: str
         };
     }
 }
+async function getProcessData(processId: string) {
+    // const response = await axios.get(`/api/common?action=processstatus&processId=${processId}`);
+    const response = await axios.get(`/api/v2/content?action=processstatus&processId=${processId}`);
+    return response.data;
+}
+async function clearContentProgress(processId: string) {
+    const response = await axios.post(`/api/v2/content`,{
+        processId,
+        action: "clearprogress"
+    });
+    return response.data;
+}
 
-// async function authenticateGoogle() {
-//     try {
-//         const auth = new google.auth.GoogleAuth({
-//             credentials: zikrajson,
-//             scopes: [
-//                 'https://www.googleapis.com/auth/drive.readonly',
-//                 'https://www.googleapis.com/auth/spreadsheets'
-//             ],
-//         });
-
-//         const authClient = await auth.getClient() as OAuth2Client;
-
-//         // Return both Drive and Sheets clients
-//         return {
-//             sheetsClient: google.sheets({
-//                 version: 'v4',
-//                 auth: authClient
-//             }),
-//             driveClient: google.drive({
-//                 version: 'v3',
-//                 auth: authClient
-//             })
-//         };
-//     } catch (error) {
-//         console.error('Google authentication error:', error);
-//         throw new Error('Failed to authenticate with Google services');
-//     }
-// }
-
-export {Login , authenticateGoogle , scrapeSheetData , clearProgress, generateContent}
+export {Login , authenticateGoogle , scrapeSheetData , clearProgress, generateContent, getProcessData, clearContentProgress}

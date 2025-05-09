@@ -15,13 +15,25 @@ class Status {
         if(data.processId){
             processid = data.processId;
         }
-        this.data[processid] = {
+        console.log(data);
+        if(!this.data[processid]){
+            this.data[processid] = [data];
+        }else{
+            this.data[processid] = [
             ...this.data[processid],
-            ...data
-        };
+                data
+            ];
+        }
     }
 
-    
+    getData(processId: string) {
+        // console.log({processId});
+        console.log({data: this.data} , processId);
+        return this.data[processId];
+    }
+    clearData(processId: string) {
+        delete this.data[processId];
+    }
 }
 
 let statusInstance = new Status();

@@ -62,11 +62,11 @@ class SheetOperations {
     checkRow(data: any, objects: {index: number, value: string | boolean}[]) {
         const matchingRows: any[] = [];
         const nonMatchingRows: any[] = [];
-
+        console.log({data, objects});
         data.forEach((row: any, index: number) => {
             const matches = objects.every(obj => {
                 if (typeof obj.value === 'boolean' && obj.value === true) {
-                    return row[obj.index] !== undefined && row[obj.index] !== null;
+                    return row[obj.index] !== undefined && row[obj.index] !== null && row[obj.index].trim() !== "";
                 }
                 return row[obj.index] === obj.value;
             });
@@ -80,7 +80,7 @@ class SheetOperations {
 
         return {
             matchingRows,
-            nonMatchingRows
+            nonMatchingRows,
         };
     }
 } 

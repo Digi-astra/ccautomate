@@ -44,7 +44,7 @@ class contentcreation extends SheetOperations {
         const data = await this.getSheetData(this.sheetName + "!A:ZZ");
         if(!data || data.length === 0){
             this.status.updateData({
-                status: "error",
+                status: "stop",
                 message: "No data found",
                 processId: this.processId
             });
@@ -60,7 +60,7 @@ class contentcreation extends SheetOperations {
 
         if (matchingRows.length === 0) {
             this.status.updateData({
-                status: "error", 
+                status: "stop", 
                 message: "No matching rows found",
                 processId: this.processId
             });
@@ -75,6 +75,11 @@ class contentcreation extends SheetOperations {
             processId: this.processId
         });
         await this.processBatch(matchingRows);
+        this.status.updateData({
+            status: "stop",
+            message: "Content generation completed",
+            processId: this.processId
+        });
     }
     
     async processBatch(data: any[]) {
@@ -136,9 +141,12 @@ class contentcreation extends SheetOperations {
         }
     }
 
+    
+
     getProcessId(){
         return this.processId;
     }
+
     private generatePayload(row: any , productId: string) {
         const payload: ContentPayload = {
             company_metadata: {

@@ -6,6 +6,8 @@ import { errorToast, successToast } from "@/components/custom/customtoast";
 import useLocalStorage from "@/_hooks/localstorage";
 import StatusDiv from "@/components/custom/statusdiv";
 import { authenticateGoogle } from "@/_clientfeatures/api";
+import { getProcessData } from "@/_clientfeatures/api";
+import { clearContentProgress } from "@/_clientfeatures/api";
 
 interface StepThreeProps {
   currentStep: number;
@@ -26,6 +28,7 @@ export default function StepThree({ currentStep }: StepThreeProps) {
   const [token] = useLocalStorage('token', '');
   const [option] = useLocalStorage('option', '');
   const [action] = useLocalStorage('action', '');
+  const [processId, setProcessId] = useLocalStorage('processId', '');
   const [status, setStatus] = useState<StatusData[]>([]);
   const [progressBool, setProgressBool] = useState<boolean>(false);
   // Transform the files data into the correct format for ReactSelect
@@ -47,13 +50,33 @@ export default function StepThree({ currentStep }: StepThreeProps) {
   useEffect(() => {
     if(progressBool){
       let checktheStatus = setInterval(async() => {
-        const progress = await authenticateGoogle("progress");
+        let progress;
+        if(processId){
+          const processData = await getProcessData(processId);
+          console.log({processData});
+          progress = processData.data;
+        }else{
+          progress = await authenticateGoogle("progress");
+        }
+        // console.log({progress});
+        if(Array.isArray(progress)){
+          setStatus(progress);
+          const shouldStop = progress.some((item: any) => 
+            item.id === "stop" || item.status === "stop"
+          );
+          if(shouldStop){
+            clearInterval(checktheStatus);
+            clearContentProgress(processId);
+            setProgressBool(false);
+            setProcessId('');
+          }
+        }
         if(progress.success){
           console.log({progress});
           setStatus(progress.data.progress);
           // Check for stop or error status in progress array
           const shouldStop = progress.data.progress.some((item: any) => 
-            item.id === "stop"
+            item.id === "stop" || item.status === "stop"
           );
           console.log("shouldStop", shouldStop)
           if (shouldStop) {
@@ -61,9 +84,9 @@ export default function StepThree({ currentStep }: StepThreeProps) {
             clearProgress();
             setProgressBool(false);
           }
-          if(progress.data.progress.length === 0){
-            setProgressBool(false);
-          }
+          // if(progress.data.progress.length === 0){
+          //   setProgressBool(false);
+          // }
         }
       }, 5000);
       return () => clearInterval(checktheStatus);
@@ -121,6 +144,8 @@ export default function StepThree({ currentStep }: StepThreeProps) {
               if (result?.success) {
                 successToast(result?.message);
                 setProgressBool(true);
+                setProcessId(result?.processId);
+                console.log({result});
               } else {
                 errorToast(result?.message);
               }
@@ -138,7 +163,7 @@ export default function StepThree({ currentStep }: StepThreeProps) {
           </button>
         </div>
       )}
-      <StatusDiv data={status} />
+      <StatusDiv data={status} type="content" />
       {/* <button 
         onClick={() => {
           clearProgress();

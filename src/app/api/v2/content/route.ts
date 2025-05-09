@@ -1,9 +1,36 @@
 import { NextRequest, NextResponse } from "next/server";
 import contentcreation from "@/_serverfeatures/contentcreation/contentcreation";
 import {CustomError} from "@/_shared/utils";
+import statusInstance from "@/_serverfeatures/common/status";
 
 export async function GET(request: NextRequest) {
+    const { searchParams } = new URL(request.url);
+    const action = searchParams.get('action');
     try{
+        if (action === "processstatus") {
+            const processId = searchParams.get('processId');
+            if(!processId){
+                throw new CustomError('Process ID is required', 400);
+            }
+            const status = statusInstance.getData(processId);
+            return NextResponse.json({
+                success: true,
+                message: 'Status fetched successfully',
+                data: status
+            });
+        }
+        if (action === "clearprogress") {
+            const processId = searchParams.get('processId');
+            if(!processId){
+                throw new CustomError('Process ID is required', 400);
+            }
+            statusInstance.clearData(processId);
+            return NextResponse.json({
+                success: true,
+                message: 'Progress cleared successfully',
+                data: null
+            });
+        }
         return NextResponse.json({ message: "Hello World" , success: true });
     }catch(error: any){
         return NextResponse.json({ message: error.message , success: false }, { status: error.statusCode });

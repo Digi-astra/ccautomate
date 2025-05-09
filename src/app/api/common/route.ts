@@ -1,15 +1,9 @@
 import { NextResponse } from "next/server";
-import { getProgress } from "@/_serverfeatures/utils";
+// import { getProgress } from "@/_serverfeatures/utils";
 import { CustomError } from "@/_shared/utils";
+import statusInstance from "@/_serverfeatures/common/status";
 
-async function handleProcessStatus(processId: string | null) {
-    const progress = processId ? getProgress(processId) : getProgress();
-    return NextResponse.json({
-        success: true,
-        message: 'Progress fetched successfully',
-        data: { progress }
-    });
-}
+
 
 function handleError(error: any) {
     return NextResponse.json(
@@ -28,7 +22,15 @@ export async function GET(request: Request) {
     try {
         if (action === "processstatus") {
             const processId = searchParams.get('processId');
-            return await handleProcessStatus(processId);
+            if(!processId){
+                throw new CustomError('Process ID is required', 400);
+            }
+            const status = statusInstance.getData(processId);
+            return NextResponse.json({
+                success: true,
+                message: 'Status fetched successfully',
+                data: { status }
+            });
         }
         
         throw new CustomError('Invalid action parameter', 400);

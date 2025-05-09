@@ -1,22 +1,4 @@
-// import PropTypes from 'prop-types';
 
-// const STATUS_DATA = {
-//   success: {
-//     label: "Success",
-//     color: "text-green-500",
-//     icon: "✓"
-//   },
-//   pending: {
-//     label: "Pending", 
-//     color: "text-yellow-500",
-//     icon: "⏳"
-//   },
-//   failed: {
-//     label: "Failed",
-//     color: "text-red-500", 
-//     icon: "✗"
-//   }
-// };
 
 let icon = {
   success: "✓",
@@ -33,7 +15,7 @@ type StatusData = {
   message: string;
 }[];
 
-function StatusDiv({ data }: { data: StatusData }) {
+function StatusDiv({ data , type }: { data: StatusData , type: string }) {
 
   if(!data || data.length === 0){
     return (
@@ -42,6 +24,23 @@ function StatusDiv({ data }: { data: StatusData }) {
         </div>
     )
   }
+  console.log({data});
+  if(type === "content"){
+    return (
+      <div className="space-y-2 max-h-[200px] overflow-y-auto">
+        {data.map((item, index) => {
+          return (
+            <div key={index} className={`flex items-center space-x-2 ${color[item.status]} bg-gray-50 p-2 rounded-md`}>
+              <span className="text-xl">{icon[item.status]}</span>
+              <span className="font-semibold">{item.message}</span>
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
+
+
 
   return (
     <div className="space-y-2 max-h-[200px] overflow-y-auto">
